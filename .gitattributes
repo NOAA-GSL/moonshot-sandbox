@@ -1,0 +1,2 @@
+baseline_input/** filter=lfs diff=lfs merge=lfs -text
+baseline_output/** filter=lfs diff=lfs merge=lfs -text
