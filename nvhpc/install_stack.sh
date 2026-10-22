@@ -2,6 +2,9 @@
 
 set -e
 
+# Absolute script path; resolves directory symlinks, but not a symlink to the script itself.
+BASE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd -P)"
+
 # Install spack
 if [[ ! -d opt/spack ]]; then
   git clone --depth=2 https://github.com/spack/spack.git opt/spack
@@ -123,5 +126,17 @@ spack:
       spec: fms@=2026.02
 EOF
 
+# For now, we have to patch FMS for nvhpc compatibility
+spack develop fms@2026.02
+FMS_source=$(spack location -c fms)
+echo "Develop path for FMS: ${FMS_source}"
+cd ${FMS_source}
+if patch --dry-run --reverse -p1 < "${BASE_DIR}/nvhpc_compatibility.patch" >/dev/null 2>&1; then
+  echo "NVHPC compatibility patch is already applied; skipping"
+else
+  patch -p1 < "${BASE_DIR}/nvhpc_compatibility.patch"
+fi
+
+# Concretize and install
 spack concretize -f
 spack install
