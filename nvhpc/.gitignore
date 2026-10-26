@@ -1,0 +1,14 @@
+# Installed stack
+opt/
+
+# Installed model
+ufs-weather-model
+
+# Build artifacts
+build
+
+# Run artifacts
+out
+err
+run
+.plotting-venv/
